@@ -11,6 +11,7 @@ from homeassistant.const import (
     CONF_CLIENT_SECRET,
     CONF_EXCLUDE,
     CONF_NAME,
+    __version__ as HAVERSION,
 )
 from homeassistant.core import callback
 from homeassistant.helpers import selector
@@ -84,8 +85,13 @@ class TraktOAuth2FlowHandler(AbstractOAuth2FlowHandler, domain=DOMAIN):
         return TraktOptionsFlowHandler(config_entry)
 
 
-class TraktOptionsFlowHandler(config_entries.OptionsFlowWithConfigEntry):
+class TraktOptionsFlowHandler(config_entries.OptionsFlow):
     """Handle Trakt options."""
+    
+    def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
+        """Initialize options flow."""
+        if AwesomeVersion(HAVERSION) < "2024.11.99":
+            self.config_entry = config_entry
 
     async def async_step_init(self, user_input: dict[str, Any] | None = None) -> None:
         """Manage the Trakt options."""
